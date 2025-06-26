@@ -1,6 +1,8 @@
-import 'package:customersupportmodule/core/appthemes.dart';
+import 'package:customersupportmodule/core/constanse/appthemes.dart';
+import 'package:customersupportmodule/modules/cutomerservice/view/screens/cutomerservice_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
+import 'package:get/get_navigation/src/routes/get_route.dart';
 
 void main() {
   runApp(const MyApp());
@@ -12,18 +14,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      title: 'Customer Support Module',
-      theme: AppThemes.appDarkTheme,
+      getPages: [GetPage(name: '/', page: () => CutomerserviceScreen())],
+      title: 'Customer Support',
+      theme: AppThemes.appLightTheme,
       debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        appBar: AppBar(title: const Text('Customer Support Module')),
-        body: Center(
-          child: Text(
-            'Welcome to the Customer Support Module',
-            style: Theme.of(context).textTheme.displayLarge,
-          ),
-        ),
-      ),
     );
   }
 }

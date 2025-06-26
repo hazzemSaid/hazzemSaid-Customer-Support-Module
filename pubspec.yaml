@@ -46,6 +46,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
+  font_awesome_flutter: ^10.8.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -73,17 +74,26 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
-  # fonts:
-  #   - family: Schyler
-  #     fonts:
-  #       - asset: fonts/Schyler-Regular.ttf
-  #       - asset: fonts/Schyler-Italic.ttf
-  #         style: italic
-  #   - family: Trajan Pro
-  #     fonts:
-  #       - asset: fonts/TrajanPro.ttf
-  #       - asset: fonts/TrajanPro_Bold.ttf
-  #         weight: 700
+fonts:
+  - family: DMSans
+    fonts:
+      - asset: assets/fonts/static/DMSans-Regular.ttf
+        weight: 400
+      - asset: assets/fonts/static/DMSans-Medium.ttf
+        weight: 500
+      - asset: assets/fonts/static/DMSans-Bold.ttf
+        weight: 700
+      - asset: assets/fonts/static/DMSans-Italic.ttf
+        style: italic
+        weight: 400
+      - asset: assets/fonts/static/DMSans-BoldItalic.ttf
+        style: italic
+        weight: 700
+  - family: Rubik
+    fonts:
+      - asset: assets/fonts/Rubik-VariableFont_wght.ttf
+      - asset: assets/fonts/Rubik-Italic-VariableFont_wght.ttf
+        style: italic
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
