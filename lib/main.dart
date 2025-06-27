@@ -1,4 +1,7 @@
 import 'package:customersupportmodule/core/constanse/appthemes.dart';
+import 'package:customersupportmodule/modules/HelpAndFAQsView/view/screens/HelpAndFAQsView_screen.dart';
+import 'package:customersupportmodule/modules/chatservices/view/screens/chatservise_screen.dart'
+    show ChatserviseScreen;
 import 'package:customersupportmodule/modules/cutomerservice/view/screens/cutomerservice_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
@@ -14,7 +17,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      getPages: [GetPage(name: '/', page: () => CutomerserviceScreen())],
+      getPages: [
+        GetPage(name: '/', page: () => CutomerserviceScreen()),
+        GetPage(name: '/helpAndFAQs', page: () => HelpAndFAQsView()),
+        GetPage(name: '/chatServices', page: () => ChatserviseScreen()),
+      ],
       title: 'Customer Support',
       theme: AppThemes.appLightTheme,
       debugShowCheckedModeBanner: false,

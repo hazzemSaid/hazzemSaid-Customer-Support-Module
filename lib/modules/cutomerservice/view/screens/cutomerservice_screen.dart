@@ -1,5 +1,6 @@
 import 'package:customersupportmodule/core/constanse/AppTextStyles.dart';
 import 'package:customersupportmodule/modules/HelpAndFAQsView/view/screens/HelpAndFAQsView_screen.dart';
+import 'package:customersupportmodule/modules/chatservices/view/screens/chatservise_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get_core/src/get_main.dart';
@@ -156,7 +157,9 @@ class CutomerserviceScreen extends StatelessWidget {
                           side: BorderSide(color: Colors.white, width: 2),
                         ),
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        Get.to(() => ChatserviseScreen());
+                      },
                       child: Icon(
                         FontAwesomeIcons.chevronRight,
                         color: Colors.white,
