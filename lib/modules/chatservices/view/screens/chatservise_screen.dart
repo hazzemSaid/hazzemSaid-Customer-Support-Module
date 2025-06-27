@@ -10,12 +10,14 @@ class ChatScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final ChatController controller = Get.find();
     final TextEditingController textController = TextEditingController();
+    final ScrollController scrollController = ScrollController();
 
     return Scaffold(
       body: SafeArea(
         child: Column(
           children: [
             const SizedBox(height: 20),
+            // Header Area
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -52,9 +54,13 @@ class ChatScreen extends StatelessWidget {
             ),
             const SizedBox(height: 10),
 
+            // Messages Display
             Expanded(
               child: Obx(() {
-                if (controller.messages.isEmpty) {
+                final sortedMessages = controller.messages.toList()
+                  ..sort((a, b) => a.timestamp.compareTo(b.timestamp));
+
+                if (sortedMessages.isEmpty) {
                   return const Center(
                     child: Text(
                       'No messages yet. Start the conversation!',
@@ -64,12 +70,12 @@ class ChatScreen extends StatelessWidget {
                 }
 
                 return ListView.builder(
+                  controller: scrollController,
                   reverse: false,
-                  itemCount: controller.messages.length,
+                  itemCount: sortedMessages.length,
                   itemBuilder: (context, index) {
-                    final msg = controller.messages[index];
+                    final msg = sortedMessages[index];
                     final isMe = msg.senderEmail == controller.senderEmail;
-
                     return Align(
                       alignment: isMe
                           ? Alignment.centerRight
@@ -138,6 +144,7 @@ class ChatScreen extends StatelessWidget {
               }),
             ),
 
+            // Loading Indicator (if sending message)
             Obx(() {
               if (controller.isLoading.value) {
                 return Container(
@@ -159,11 +166,9 @@ class ChatScreen extends StatelessWidget {
               return const SizedBox.shrink();
             }),
 
+            // Input Field Area
             Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 20.0,
-                vertical: 12,
-              ),
+              padding: const EdgeInsets.symmetric(vertical: 12),
               decoration: BoxDecoration(
                 color: Theme.of(context).scaffoldBackgroundColor,
                 boxShadow: [
@@ -180,8 +185,11 @@ class ChatScreen extends StatelessWidget {
                     child: TextField(
                       controller: textController,
                       onChanged: (val) => controller.messageText.value = val,
-                      onSubmitted: (val) =>
-                          _sendMessage(controller, textController),
+                      onSubmitted: (val) => _sendMessage(
+                        controller,
+                        textController,
+                        scrollController,
+                      ),
                       maxLines: null,
                       decoration: InputDecoration(
                         prefixIcon: Icon(
@@ -224,7 +232,11 @@ class ChatScreen extends StatelessWidget {
                           ),
                           onPressed:
                               controller.messageText.value.trim().isNotEmpty
-                              ? () => _sendMessage(controller, textController)
+                              ? () => _sendMessage(
+                                  controller,
+                                  textController,
+                                  scrollController,
+                                )
                               : null,
                         );
                       }),
@@ -242,10 +254,22 @@ class ChatScreen extends StatelessWidget {
   void _sendMessage(
     ChatController controller,
     TextEditingController textController,
+    ScrollController scrollController,
   ) {
     if (controller.messageText.value.trim().isNotEmpty) {
-      controller.sendMessage();
-      textController.clear();
+      controller.sendMessage().then((_) {
+        textController.clear();
+        // التمرير التلقائي لآخر رسالة بعد إرسالها
+        Future.delayed(const Duration(milliseconds: 100), () {
+          if (scrollController.hasClients) {
+            scrollController.animateTo(
+              scrollController.position.maxScrollExtent,
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeOut,
+            );
+          }
+        });
+      });
     }
   }
 

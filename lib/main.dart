@@ -30,7 +30,9 @@ class MyApp extends StatelessWidget {
       initialBinding: ChatBinding(),
 
       title: 'Customer Support',
+      darkTheme: AppThemes.appDarkTheme,
       theme: AppThemes.appLightTheme,
+      themeMode: ThemeMode.system,
       debugShowCheckedModeBanner: false,
     );
   }
