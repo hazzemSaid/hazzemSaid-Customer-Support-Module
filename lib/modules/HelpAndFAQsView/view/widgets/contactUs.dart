@@ -1,5 +1,8 @@
+import 'package:customersupportmodule/modules/chatservices/view/screens/chatservise_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_navigation/get_navigation.dart';
 
 class contactUs extends StatefulWidget {
   const contactUs({super.key});
@@ -70,7 +73,7 @@ class _contactUsState extends State<contactUs> {
               child: selectedQuestionIndex == 0
                   ? ElevatedButton(
                       onPressed: () {
-                        //chat screen
+                        Get.to(() => ChatScreen());
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Theme.of(context).colorScheme.primary,

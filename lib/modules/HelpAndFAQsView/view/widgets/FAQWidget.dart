@@ -12,7 +12,6 @@ class _FAQWidgetState extends State<FAQWidget> {
   int selectedTabIndex = 0;
   int selectedQuestionIndex = -1;
 
-  // لكل تبويب، مجموعة أسئلة
   final Map<String, List<String>> faqQuestions = {
     "General": List.generate(5, (i) => "What is your general policy?"),
     "Account": List.generate(5, (i) => "How to manage my account?"),
@@ -35,7 +34,7 @@ class _FAQWidgetState extends State<FAQWidget> {
               onTap: () {
                 setState(() {
                   selectedTabIndex = index;
-                  selectedQuestionIndex = -1; // reset FAQ selection
+                  selectedQuestionIndex = -1;
                 });
               },
               child: AnimatedContainer(

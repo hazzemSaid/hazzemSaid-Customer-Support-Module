@@ -1,39 +1,41 @@
-import 'package:customersupportmodule/modules/chatservices/view/widgets/chatWidget.dart';
+import 'package:customersupportmodule/modules/chatservices/controller/charcontroller.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get/get.dart';
 
-class ChatserviseScreen extends StatelessWidget {
-  const ChatserviseScreen({super.key});
+class ChatScreen extends StatelessWidget {
+  const ChatScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final ChatController controller = Get.find();
+    final TextEditingController textController = TextEditingController();
+
     return Scaffold(
       body: SafeArea(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SizedBox(width: double.infinity),
+            const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(
                   Icons.headset,
-                  size: 40,
+                  size: 30,
                   color: Theme.of(context).colorScheme.primary,
                 ),
-                SizedBox(width: 10),
+                const SizedBox(width: 10),
                 Text(
                   'Assistant',
                   style: TextStyle(
-                    fontSize: 30,
+                    fontSize: 24,
                     fontWeight: FontWeight.bold,
                     color: Theme.of(context).colorScheme.primary,
                   ),
                 ),
               ],
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Text(
               "I'm here to assist you.",
               style: TextStyle(
@@ -48,55 +50,217 @@ class ChatserviseScreen extends StatelessWidget {
               indent: 20,
               endIndent: 20,
             ),
-            SizedBox(height: 20),
-            //chat widget
-            chatWidget(),
-            SizedBox(height: 20),
-            // Input field for sending messages
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: TextField(
-                decoration: InputDecoration(
-                  prefixIcon: Icon(
-                    Icons.camera_alt_outlined,
-                    color: Theme.of(context).colorScheme.primary,
+            const SizedBox(height: 10),
+
+            Expanded(
+              child: Obx(() {
+                if (controller.messages.isEmpty) {
+                  return const Center(
+                    child: Text(
+                      'No messages yet. Start the conversation!',
+                      style: TextStyle(color: Colors.grey, fontSize: 16),
+                    ),
+                  );
+                }
+
+                return ListView.builder(
+                  reverse: false,
+                  itemCount: controller.messages.length,
+                  itemBuilder: (context, index) {
+                    final msg = controller.messages[index];
+                    final isMe = msg.senderEmail == controller.senderEmail;
+
+                    return Align(
+                      alignment: isMe
+                          ? Alignment.centerRight
+                          : Alignment.centerLeft,
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(
+                          vertical: 5,
+                          horizontal: 10,
+                        ),
+                        padding: const EdgeInsets.all(12),
+                        constraints: BoxConstraints(
+                          maxWidth: MediaQuery.of(context).size.width * 0.75,
+                        ),
+                        decoration: BoxDecoration(
+                          color: isMe
+                              ? Theme.of(
+                                  context,
+                                ).colorScheme.primary.withOpacity(0.8)
+                              : Colors.grey[300],
+                          borderRadius: BorderRadius.only(
+                            topLeft: const Radius.circular(12),
+                            topRight: const Radius.circular(12),
+                            bottomLeft: isMe
+                                ? const Radius.circular(12)
+                                : const Radius.circular(2),
+                            bottomRight: isMe
+                                ? const Radius.circular(2)
+                                : const Radius.circular(12),
+                          ),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: isMe
+                              ? CrossAxisAlignment.end
+                              : CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              msg.senderEmail.split('@')[0],
+                              style: TextStyle(
+                                fontSize: 10,
+                                color: isMe ? Colors.white70 : Colors.grey[600],
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              msg.content,
+                              style: TextStyle(
+                                color: isMe ? Colors.white : Colors.black87,
+                                fontSize: 16,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              _formatTime(msg.timestamp),
+                              style: TextStyle(
+                                fontSize: 9,
+                                color: isMe ? Colors.white60 : Colors.grey[500],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                );
+              }),
+            ),
+
+            Obx(() {
+              if (controller.isLoading.value) {
+                return Container(
+                  padding: const EdgeInsets.all(8),
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                      SizedBox(width: 8),
+                      Text('Sending...', style: TextStyle(color: Colors.grey)),
+                    ],
                   ),
-                  hintText: 'Type your message here...',
-                  suffixIcon: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.end,
+                );
+              }
+              return const SizedBox.shrink();
+            }),
+
+            Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20.0,
+                vertical: 12,
+              ),
+              decoration: BoxDecoration(
+                color: Theme.of(context).scaffoldBackgroundColor,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.shade300,
+                    blurRadius: 5,
+                    offset: const Offset(0, -2),
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: textController,
+                      onChanged: (val) => controller.messageText.value = val,
+                      onSubmitted: (val) =>
+                          _sendMessage(controller, textController),
+                      maxLines: null,
+                      decoration: InputDecoration(
+                        prefixIcon: Icon(
+                          Icons.camera_alt_outlined,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                        hintText: 'Type your message here...',
+                        filled: true,
+                        fillColor: Colors.grey[200],
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(25),
+                          borderSide: BorderSide.none,
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 12,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Row(
                     children: [
                       IconButton(
                         icon: Icon(
                           FontAwesomeIcons.microphoneLines,
                           color: Theme.of(context).colorScheme.primary,
+                          size: 20,
                         ),
-                        onPressed: () {
-                          // Handle attach file action
-                        },
+                        onPressed: () {},
                       ),
-                      IconButton(
-                        icon: Icon(
-                          Icons.send,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                        onPressed: () {
-                          // Handle send message action
-                        },
-                      ),
+                      Obx(() {
+                        return IconButton(
+                          icon: Icon(
+                            Icons.send,
+                            color:
+                                controller.messageText.value.trim().isNotEmpty
+                                ? Theme.of(context).colorScheme.primary
+                                : Colors.grey,
+                          ),
+                          onPressed:
+                              controller.messageText.value.trim().isNotEmpty
+                              ? () => _sendMessage(controller, textController)
+                              : null,
+                        );
+                      }),
                     ],
                   ),
-                ),
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.onSurface,
-                  fontSize: 16,
-                ),
+                ],
               ),
             ),
-            SizedBox(height: 20),
           ],
         ),
       ),
     );
+  }
+
+  void _sendMessage(
+    ChatController controller,
+    TextEditingController textController,
+  ) {
+    if (controller.messageText.value.trim().isNotEmpty) {
+      controller.sendMessage();
+      textController.clear();
+    }
+  }
+
+  String _formatTime(DateTime timestamp) {
+    final now = DateTime.now();
+    final difference = now.difference(timestamp);
+
+    if (difference.inDays > 0) {
+      return '${difference.inDays}d ago';
+    } else if (difference.inHours > 0) {
+      return '${difference.inHours}h ago';
+    } else if (difference.inMinutes > 0) {
+      return '${difference.inMinutes}m ago';
+    } else {
+      return 'now';
+    }
   }
 }

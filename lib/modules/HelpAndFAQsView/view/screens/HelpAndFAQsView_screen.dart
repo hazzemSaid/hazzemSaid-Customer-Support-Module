@@ -50,7 +50,6 @@ class _HelpAndFAQsViewState extends State<HelpAndFAQsView> {
                   ),
                   const SizedBox(height: 20),
 
-                  // Top Tabs (FAQ / Contact Us)
                   Wrap(
                     spacing: 40,
                     runSpacing: 18,
@@ -91,7 +90,6 @@ class _HelpAndFAQsViewState extends State<HelpAndFAQsView> {
 
                   const SizedBox(height: 10),
 
-                  // Content depending on tab
                   selectedIndex == 0 ? const FAQWidget() : const contactUs(),
                 ],
               ),

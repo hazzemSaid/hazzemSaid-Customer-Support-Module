@@ -158,7 +158,7 @@ class CutomerserviceScreen extends StatelessWidget {
                         ),
                       ),
                       onPressed: () {
-                        Get.to(() => ChatserviseScreen());
+                        Get.to(() => ChatScreen());
                       },
                       child: Icon(
                         FontAwesomeIcons.chevronRight,
